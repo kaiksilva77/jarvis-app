@@ -1,0 +1,170 @@
+#:kivy 2.0
+
+# ─── Cores e estilos globais ───
+#:set COR_FUNDO       0.05, 0.07, 0.12, 1
+#:set COR_PAINEL      0.08, 0.11, 0.18, 1
+#:set COR_ACENTO      0,    0.83, 1,    1
+#:set COR_TEXTO       0.88, 0.95, 1,    1
+#:set COR_TEXTO_DIM   0.45, 0.60, 0.70, 1
+#:set COR_USUARIO_BG  0.06, 0.16, 0.28, 1
+#:set COR_JARVIS_BG   0.05, 0.14, 0.07, 1
+#:set COR_JARVIS_TX   0,    1,    0.53, 1
+#:set COR_BOTAO       0,    0.83, 1,    1
+
+
+<TelaPrincipal>:
+    orientation: 'vertical'
+    spacing: 0
+    canvas.before:
+        Color:
+            rgba: 0.05, 0.07, 0.12, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    # ── Cabeçalho ──
+    BoxLayout:
+        size_hint_y: None
+        height: dp(52)
+        padding: dp(14), dp(8)
+        canvas.before:
+            Color:
+                rgba: 0.08, 0.11, 0.18, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+            Color:
+                rgba: 0, 0.83, 1, 1
+            Rectangle:
+                pos: self.x, self.y
+                size: self.width, dp(1.5)
+
+        Label:
+            text: '[b][color=00D4FF]J A R V I S[/color][/b]'
+            markup: True
+            font_size: sp(19)
+            halign: 'left'
+            valign: 'middle'
+            size_hint_x: 0.65
+            text_size: self.size
+
+        Label:
+            text: '[color=00FF88]OFFLINE[/color]'
+            markup: True
+            font_size: sp(11)
+            halign: 'right'
+            valign: 'middle'
+            size_hint_x: 0.35
+            text_size: self.size
+
+    # ── Área de chat (scroll) ──
+    ScrollView:
+        id: scroll
+        size_hint: 1, 1
+        bar_width: dp(3)
+        bar_color: 0, 0.83, 1, 0.8
+        bar_inactive_color: 0.2, 0.3, 0.4, 0.5
+        do_scroll_x: False
+
+        BoxLayout:
+            id: chat_box
+            orientation: 'vertical'
+            size_hint_y: None
+            height: self.minimum_height
+            padding: dp(8), dp(8)
+            spacing: dp(6)
+
+            # As mensagens são adicionadas aqui dinamicamente
+
+    # ── Rodapé: input + botão ──
+    BoxLayout:
+        size_hint_y: None
+        height: dp(64)
+        padding: dp(8), dp(8)
+        spacing: dp(8)
+        canvas.before:
+            Color:
+                rgba: 0.08, 0.11, 0.18, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+            Color:
+                rgba: 0.12, 0.23, 0.37, 1
+            Rectangle:
+                pos: self.x, self.top - dp(1)
+                size: self.width, dp(1)
+
+        TextInput:
+            id: campo_texto
+            hint_text: 'Digite um comando...'
+            hint_text_color: 0.45, 0.60, 0.70, 1
+            foreground_color: 0.88, 0.95, 1, 1
+            background_color: 0.06, 0.16, 0.28, 1
+            cursor_color: 0, 0.83, 1, 1
+            font_size: sp(15)
+            multiline: False
+            size_hint_x: 0.80
+            padding: dp(12), dp(10)
+            on_text_validate: root.enviar()
+
+        Button:
+            text: '>'
+            font_size: sp(20)
+            bold: True
+            size_hint_x: 0.20
+            background_normal: ''
+            background_color: 0, 0.83, 1, 1
+            color: 0.05, 0.07, 0.12, 1
+            on_press: root.enviar()
+
+
+# ── Widget de mensagem do usuário ──
+<MensagemUsuario>:
+    size_hint_y: None
+    height: self.minimum_height
+    padding: dp(8), dp(4)
+
+    canvas.before:
+        Color:
+            rgba: 0.06, 0.16, 0.28, 1
+        RoundedRectangle:
+            pos: self.x + dp(4), self.y + dp(2)
+            size: self.width - dp(8), self.height - dp(4)
+            radius: [dp(10)]
+
+    Label:
+        text: root.texto
+        color: 0.88, 0.95, 1, 1
+        font_size: sp(14)
+        halign: 'left'
+        valign: 'top'
+        text_size: self.width, None
+        size_hint_y: None
+        height: self.texture_size[1] + dp(8)
+        markup: True
+
+
+# ── Widget de mensagem do JARVIS ──
+<MensagemJarvis>:
+    size_hint_y: None
+    height: self.minimum_height
+    padding: dp(8), dp(4)
+
+    canvas.before:
+        Color:
+            rgba: 0.05, 0.14, 0.07, 1
+        RoundedRectangle:
+            pos: self.x + dp(4), self.y + dp(2)
+            size: self.width - dp(8), self.height - dp(4)
+            radius: [dp(10)]
+
+    Label:
+        text: root.texto
+        color: 0, 1, 0.53, 1
+        font_size: sp(14)
+        halign: 'left'
+        valign: 'top'
+        text_size: self.width, None
+        size_hint_y: None
+        height: self.texture_size[1] + dp(8)
+        markup: True
