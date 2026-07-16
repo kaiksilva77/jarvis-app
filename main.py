@@ -4,6 +4,7 @@ Integra a interface Kivy com o cerebro e a memoria.
 """
 
 import os
+import logging
 
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
@@ -14,6 +15,8 @@ from kivy.metrics import dp, sp
 
 import memory
 import brain
+
+logger = logging.getLogger(__name__)
 
 
 # ─────────────────────────────────────────
@@ -85,10 +88,14 @@ class TelaPrincipal(BoxLayout):
         try:
             resposta = brain.processar(texto)
         except Exception as e:
+            logger.exception("Falha ao processar comando: %r", texto)
             resposta = "Erro interno: {}".format(str(e))
 
-        # Salva no historico
-        memory.salvar_historico(texto, resposta)
+        # Salva no historico (uma falha aqui nao deve impedir a resposta)
+        try:
+            memory.salvar_historico(texto, resposta)
+        except Exception:
+            logger.exception("Falha ao salvar historico")
 
         # Exibe resposta
         self._adicionar_mensagem(resposta, tipo="jarvis")
@@ -130,7 +137,10 @@ class JarvisApp(App):
 
     def build(self):
         # Inicializa banco de dados
-        memory.inicializar()
+        try:
+            memory.inicializar()
+        except Exception:
+            logger.exception("Falha ao inicializar o banco de dados")
 
         # Configura cor de fundo da janela
         Window.clearcolor = (0.05, 0.07, 0.12, 1)
