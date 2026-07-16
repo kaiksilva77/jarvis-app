@@ -4,9 +4,51 @@ Executa cada comando e retorna a resposta.
 """
 
 from datetime import datetime
-import math
+import ast
+import operator
 import re
 import memory
+
+
+# Operadores permitidos na calculadora (avaliacao segura via AST)
+_OPERADORES = {
+    ast.Add: operator.add,
+    ast.Sub: operator.sub,
+    ast.Mult: operator.mul,
+    ast.Div: operator.truediv,
+    ast.Mod: operator.mod,
+    ast.Pow: operator.pow,
+    ast.USub: operator.neg,
+    ast.UAdd: operator.pos,
+}
+
+# Limites para evitar negacao de servico (DoS) por expoentes gigantes
+_EXPOENTE_MAX = 100
+_BASE_MAX = 1e6
+
+
+def _avaliar(no):
+    """Avalia recursivamente um no da AST permitindo apenas aritmetica."""
+    if isinstance(no, ast.Constant):
+        if isinstance(no.value, bool) or not isinstance(no.value, (int, float)):
+            raise ValueError("valor invalido")
+        return no.value
+    if isinstance(no, ast.BinOp):
+        op = _OPERADORES.get(type(no.op))
+        if op is None:
+            raise ValueError("operador nao permitido")
+        esquerda = _avaliar(no.left)
+        direita = _avaliar(no.right)
+        if isinstance(no.op, ast.Pow):
+            if abs(direita) > _EXPOENTE_MAX or abs(esquerda) > _BASE_MAX:
+                raise ValueError("expoente muito grande")
+        return op(esquerda, direita)
+    if isinstance(no, ast.UnaryOp):
+        op = _OPERADORES.get(type(no.op))
+        if op is None:
+            raise ValueError("operador nao permitido")
+        return op(_avaliar(no.operand))
+    raise ValueError("expressao nao permitida")
 
 
 def hora():
@@ -43,7 +85,8 @@ def calcular(expressao):
 
     try:
         expr = expr.replace("^", "**")
-        resultado = eval(expr, {"__builtins__": {}}, {})
+        arvore = ast.parse(expr, mode="eval")
+        resultado = _avaliar(arvore.body)
         # Formata resultado
         if isinstance(resultado, float) and resultado == int(resultado):
             resultado = int(resultado)
