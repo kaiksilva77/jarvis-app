@@ -7,6 +7,7 @@ from datetime import datetime
 import math
 import re
 import memory
+from utils import remover_palavras
 
 
 def hora():
@@ -27,9 +28,10 @@ def data():
 def calcular(expressao):
     """Avalia expressao matematica simples de forma segura."""
     # Remove palavras, mantém só os numeros e operadores
-    expr = expressao.lower()
-    for p in ["calcular","calcule","quanto","e","eh","=","?"]:
-        expr = expr.replace(p, " ")
+    expr = remover_palavras(
+        expressao.lower(),
+        ["calcular", "calcule", "quanto", "e", "eh", "=", "?"]
+    )
 
     # Substitui vírgula por ponto
     expr = expr.replace(",", ".").strip()
