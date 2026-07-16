@@ -4,9 +4,12 @@ Executa cada comando e retorna a resposta.
 """
 
 from datetime import datetime
+import logging
 import math
 import re
 import memory
+
+logger = logging.getLogger(__name__)
 
 
 def hora():
@@ -51,6 +54,7 @@ def calcular(expressao):
     except ZeroDivisionError:
         return "Erro: divisao por zero!"
     except Exception:
+        logger.exception("Falha ao avaliar expressao: %r", expr)
         return "Nao consegui calcular. Ex: calcular 10+5"
 
 
