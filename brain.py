@@ -3,7 +3,10 @@ brain.py - Cerebro do JARVIS
 Interpreta o texto do usuario e decide qual acao executar.
 """
 
+import re
+
 import actions
+from utils import remover_palavras
 
 
 def processar(texto):
@@ -37,13 +40,12 @@ def processar(texto):
     # ── Calcular
     if any(w in t for w in ["calcular", "calcule", "quanto"]):
         # Remove a palavra de comando, passa o resto
-        expr = t
-        for p in ["calcular", "calcule", "quanto e", "quanto eh", "quanto"]:
-            expr = expr.replace(p, "")
+        expr = remover_palavras(
+            t, ["calcular", "calcule", "quanto e", "quanto eh", "quanto"], sub=""
+        )
         return actions.calcular(expr)
 
     # ── Expressao matematica direta (ex: "10+5")
-    import re
     if re.search(r'\d+\s*[\+\-\*\/]\s*\d+', t):
         return actions.calcular(t)
 

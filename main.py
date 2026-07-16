@@ -20,8 +20,10 @@ import brain
 #  WIDGETS DE MENSAGEM
 # ─────────────────────────────────────────
 
-class MensagemUsuario(BoxLayout):
-    """Balao de mensagem do usuario."""
+class MensagemBase(BoxLayout):
+    """Balao de mensagem generico. Subclasses definem o prefixo."""
+
+    prefixo = ""
 
     def __init__(self, texto, **kwargs):
         super().__init__(**kwargs)
@@ -29,7 +31,7 @@ class MensagemUsuario(BoxLayout):
         self.size_hint_y = None
 
         # Prefixo visual
-        self.texto = "[b]Voce:[/b]  " + texto
+        self.texto = self.prefixo + texto
 
         # Ajusta altura depois do render
         Clock.schedule_once(self._ajustar, 0)
@@ -38,20 +40,16 @@ class MensagemUsuario(BoxLayout):
         self.height = self.minimum_height + dp(8)
 
 
-class MensagemJarvis(BoxLayout):
+class MensagemUsuario(MensagemBase):
+    """Balao de mensagem do usuario."""
+
+    prefixo = "[b]Voce:[/b]  "
+
+
+class MensagemJarvis(MensagemBase):
     """Balao de mensagem do JARVIS."""
 
-    def __init__(self, texto, **kwargs):
-        super().__init__(**kwargs)
-        self.orientation = "vertical"
-        self.size_hint_y = None
-
-        self.texto = "[b]JARVIS:[/b]  " + texto
-
-        Clock.schedule_once(self._ajustar, 0)
-
-    def _ajustar(self, dt):
-        self.height = self.minimum_height + dp(8)
+    prefixo = "[b]JARVIS:[/b]  "
 
 
 # ─────────────────────────────────────────
