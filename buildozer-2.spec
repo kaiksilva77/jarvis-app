@@ -24,7 +24,8 @@ fullscreen = 0
 # main.py é detectado automaticamente
 
 # ── Android ──
-android.permissions = WRITE_EXTERNAL_STORAGE,READ_EXTERNAL_STORAGE
+# App 100% offline e usa armazenamento privado; nenhuma permissao extra necessaria.
+android.permissions =
 android.api = 33
 android.minapi = 21
 android.ndk = 25b
